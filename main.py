@@ -1,16 +1,26 @@
-# This is a sample Python script.
+from flask import Flask, request
+import psycopg2
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+app = Flask(__name__)
 
+conn = psycopg2.connect(
+    host="localhost",
+    database="postgres",
+    user="thomaswyss",
+    password="testtest"
+)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+@app.route('/add_user', methods=['POST'])
+def add_user():
+    name = request.form['name']
+    email = request.form['email']
+    password = request.form['password']
 
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO users (name, email, password) VALUES (%s, %s, %s)", (name, email, password))
+    conn.commit()
 
-# Press the green button in the gutter to run the script.
+    return 'User added successfully'
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    app.run()
